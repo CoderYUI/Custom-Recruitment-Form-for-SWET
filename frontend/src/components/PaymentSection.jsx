@@ -83,17 +83,6 @@ const PaymentSection = ({ formData }) => {
         padding: '32px 24px'
       }}>
         <div style={{ textAlign: 'center', marginBottom: 18 }}>
-          <img
-            src="/swet_logo.jpg"
-            alt="SWET Logo"
-            style={{
-              width: 70,
-              height: 70,
-              borderRadius: '50%',
-              marginBottom: 12,
-              boxShadow: '0 2px 8px rgba(37,99,235,0.10)'
-            }}
-          />
           <h2 className="info-box-title" style={{ marginBottom: 6, color: '#2563eb' }}>
             Thank You for Filling the Form!
           </h2>
