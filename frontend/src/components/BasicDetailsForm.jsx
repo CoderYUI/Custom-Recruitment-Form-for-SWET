@@ -1,75 +1,93 @@
 // src/components/BasicDetailsForm.jsx
-import React, { useState } from 'react';
-import FormSectionWrapper from './FormSectionWrapper';
+import React from 'react';
 
-const BasicDetailsForm = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    emailId: '',
-    universityCollege: '',
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
+const BasicDetailsForm = ({ formData, handleInputChange, showValidation }) => {
   return (
-    <FormSectionWrapper sectionNumber="2"> {}
-      <div className="info-box">
-        <h2 className="info-box-title">BASIC DETAILS</h2>
+    <div className="info-box">
+      <h2 className="info-box-title">Basic Details</h2>
+      <div className="form-fields-vertical">
         <div className="form-field-group">
           <label htmlFor="name" className="form-label">
-            NAME: <span className="required-asterisk">*</span>
+            Name <span className="required-asterisk">*</span>
           </label>
           <input
             type="text"
             id="name"
             name="name"
             value={formData.name}
-            onChange={handleChange}
+            onChange={handleInputChange}
             className="input-style"
             required
             placeholder="Your full name"
           />
+          {showValidation && !formData.name.trim() && (
+            <span style={{ color: '#e53935', fontSize: '0.97em', marginTop: 4, display: 'block' }}>
+              Please fill this field.
+            </span>
+          )}
         </div>
-
         <div className="form-field-group">
           <label htmlFor="emailId" className="form-label">
-            EMAIL ID: <span className="required-asterisk">*</span>
+            Email ID <span className="required-asterisk">*</span>
           </label>
           <input
             type="email"
             id="emailId"
             name="emailId"
             value={formData.emailId}
-            onChange={handleChange}
+            onChange={handleInputChange}
             className="input-style"
             required
             placeholder="your.email@example.com"
           />
+          {showValidation && !formData.emailId.trim() && (
+            <span style={{ color: '#e53935', fontSize: '0.97em', marginTop: 4, display: 'block' }}>
+              Please fill this field.
+            </span>
+          )}
         </div>
-
         <div className="form-field-group">
           <label htmlFor="universityCollege" className="form-label">
-            UNIVERSITY/COLLEGE NAME: <span className="required-asterisk">*</span>
+            University/College Name <span className="required-asterisk">*</span>
           </label>
           <input
             type="text"
             id="universityCollege"
             name="universityCollege"
             value={formData.universityCollege}
-            onChange={handleChange}
+            onChange={handleInputChange}
             className="input-style"
             required
             placeholder="Your University or College name"
           />
+          {showValidation && !formData.universityCollege.trim() && (
+            <span style={{ color: '#e53935', fontSize: '0.97em', marginTop: 4, display: 'block' }}>
+              Please fill this field.
+            </span>
+          )}
+        </div>
+        <div className="form-field-group">
+          <label htmlFor="contactNumber" className="form-label">
+            Contact Number <span className="required-asterisk">*</span>
+          </label>
+          <input
+            type="tel"
+            id="contactNumber"
+            name="contactNumber"
+            value={formData.contactNumber}
+            onChange={handleInputChange}
+            className="input-style"
+            required
+            placeholder="Your phone number"
+          />
+          {showValidation && !formData.contactNumber.trim() && (
+            <span style={{ color: '#e53935', fontSize: '0.97em', marginTop: 4, display: 'block' }}>
+              Please fill this field.
+            </span>
+          )}
         </div>
       </div>
-    </FormSectionWrapper>
+    </div>
   );
 };
 
