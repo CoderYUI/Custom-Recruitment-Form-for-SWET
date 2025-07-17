@@ -82,7 +82,12 @@ function App() {
   // Validation for Study Details section
   const isStudyDetailsValid =
     formData.yearOfStudy.trim() !== '' &&
-    formData.stateCityUniversity.trim() !== '';
+    formData.stateCityUniversity.trim() !== '' &&
+    formData.resumeUrl.trim() !== '' &&
+    formData.instagramId.trim() !== '' &&
+    formData.linkedinId.trim() !== '' &&
+    formData.currentGpa.trim() !== '' &&
+    formData.specialization.trim() !== '';
 
   // Validation for Department section
   const isDepartmentValid = formData.interestedDepartments.length > 0;

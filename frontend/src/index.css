@@ -338,6 +338,7 @@ body {
 
 .form-field-group {
   margin-bottom: 0;
+  position: relative;
 }
 
 /* Responsive grid for form fields */
@@ -360,6 +361,12 @@ body {
   gap: 28px;
 }
 
+@media (max-width: 480px) {
+  .form-fields-vertical {
+    gap: 20px;
+  }
+}
+
 /* Modern label style */
 .form-label {
   font-size: 0.93rem;
@@ -369,6 +376,13 @@ body {
   letter-spacing: 0.04em;
   margin-bottom: 6px;
   display: block;
+}
+
+@media (max-width: 480px) {
+  .form-label {
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+  }
 }
 
 /* Input and textarea style */
@@ -388,6 +402,15 @@ body {
   margin-bottom: 0;
 }
 
+@media (max-width: 480px) {
+  .input-style,
+  .textarea-style {
+    padding: 12px;
+    min-height: 44px; /* Ensure minimum touch target size */
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+}
+
 .input-style:focus,
 .textarea-style:focus {
   border-color: var(--button-primary-bg);
@@ -398,6 +421,18 @@ body {
 .input-style:hover,
 .textarea-style:hover {
   border-color: var(--accent-color);
+}
+
+/* Validation error styling */
+.validation-error {
+  border-color: var(--required-asterisk-color) !important;
+  background-color: rgba(229, 57, 53, 0.03) !important;
+  box-shadow: 0 0 0 1px rgba(229, 57, 53, 0.2) !important;
+}
+
+.validation-error:focus {
+  border-color: var(--required-asterisk-color) !important;
+  box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2) !important;
 }
 
 .textarea-style {
@@ -421,6 +456,42 @@ body {
   margin-left: 4px;
   font-size: 1.1em;
   vertical-align: middle;
+  font-weight: bold;
+  display: inline-block;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+/* Add a subtle highlight to required fields */
+input:required, textarea:required, select:required {
+  border-left: 3px solid var(--required-asterisk-color);
+}
+
+/* Style for validation error messages */
+span[style*="color: #e53935"] {
+  color: var(--required-asterisk-color) !important;
+  font-size: 0.9em !important;
+  margin-top: 4px !important;
+  display: block !important;
+  padding: 4px 8px !important;
+  background-color: rgba(229, 57, 53, 0.08) !important;
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+}
+
+@media (max-width: 480px) {
+  .required-asterisk {
+    font-size: 1.2em;
+  }
+  
+  input:required, textarea:required, select:required {
+    border-left-width: 4px;
+  }
 }
 
 /* Checkbox/radio group modern look */
@@ -435,6 +506,14 @@ body {
   gap: 14px 24px;
 }
 
+@media (max-width: 480px) {
+  .checkbox-group,
+  .radio-group {
+    padding: 14px 12px;
+    gap: 10px 16px;
+  }
+}
+
 .checkbox-item,
 .radio-item {
   font-size: 1rem;
@@ -447,6 +526,14 @@ body {
   padding: 4px 0;
 }
 
+@media (max-width: 480px) {
+  .checkbox-item,
+  .radio-item {
+    padding: 8px 0; /* Larger touch target */
+    width: 100%; /* Full width on mobile */
+  }
+}
+
 .checkbox-item input[type="checkbox"],
 .radio-item input[type="radio"] {
   accent-color: var(--button-primary-bg);
@@ -456,6 +543,14 @@ body {
   border: 1.5px solid var(--border-color);
   margin-right: 8px;
   transition: border-color 0.2s;
+}
+
+@media (max-width: 480px) {
+  .checkbox-item input[type="checkbox"],
+  .radio-item input[type="radio"] {
+    width: 24px;
+    height: 24px;
+  }
 }
 
 .checkbox-item input[type="checkbox"]:hover,
@@ -500,34 +595,37 @@ body {
 }
 
 @media (max-width: 480px) {
-  .textarea-style,
-  .input-style {
-    padding: 8px;
-    font-size: var(--font-size-sm);
-  }
-
   .form-label,
   .info-box p,
   .info-box ul li {
     font-size: var(--font-size-sm);
   }
 
+  .info-box {
+    padding: 16px 14px;
+    margin-bottom: 16px;
+  }
+
   .info-box-title {
     font-size: var(--font-size-lg);
+    margin-bottom: 12px;
   }
 
   .payment-info-text {
     font-size: var(--font-size-base);
+    padding: 12px;
   }
 
   .account-details-box {
     font-size: var(--font-size-base);
+    padding: 12px;
   }
 
   .submit-button {
-    padding: 10px 20px;
+    padding: 12px 20px;
     font-size: var(--font-size-base);
     width: 100%;
+    min-height: 48px; /* Ensure good touch target */
   }
 }
 
@@ -535,6 +633,19 @@ body {
   .checkbox-item,
   .radio-item {
     font-size: var(--font-size-sm);
+    padding: 10px 0; /* Even larger touch target for very small screens */
+  }
+  
+  /* Add styles for validation error messages */
+  span[style*="color: #e53935"] {
+    font-size: 0.85em !important;
+    padding: 4px 0;
+    margin-top: 2px !important;
+  }
+  
+  .form-container {
+    padding: 12px 10px;
+    margin: 16px auto;
   }
 }
 

@@ -17,6 +17,19 @@ const departmentIcons = {
 };
 
 const DepartmentDetails = ({ formData, handleInputChange, onDepartmentsChange, showValidation }) => {
+  // Helper function for validation error messages
+  const ValidationError = ({ message }) => (
+    <span style={{
+      color: '#e53935',
+      fontSize: '0.9em',
+      marginTop: 4,
+      display: 'block',
+      padding: '2px 0'
+    }}>
+      {message || 'Please select at least one department.'}
+    </span>
+  );
+
   const departments = [
     'VIDEO EDITOR',
     'GRAPHIC DESIGNER',
@@ -44,16 +57,26 @@ const DepartmentDetails = ({ formData, handleInputChange, onDepartmentsChange, s
     onDepartmentsChange(updatedDepartments);
   };
 
+  const isDepartmentEmpty = formData.interestedDepartments.length === 0;
+
   return (
     <div className="info-box">
       <h2 className="info-box-title">Department Selection</h2>
+      <p style={{
+        fontSize: '0.85rem',
+        color: 'var(--secondary-text-color)',
+        marginBottom: '16px',
+        fontStyle: 'italic'
+      }}>
+        Fields marked with <span className="required-asterisk">*</span> are required
+      </p>
       <div className="form-fields-vertical">
         <div className="form-field-group">
           <label className="form-label">
             Interested Department <span className="required-asterisk">*</span>
           </label>
           <div
-            className="checkbox-group"
+            className={`checkbox-group ${showValidation && isDepartmentEmpty ? 'validation-error' : ''}`}
             style={{
               marginTop: 8,
               flexDirection: 'column',
@@ -61,6 +84,7 @@ const DepartmentDetails = ({ formData, handleInputChange, onDepartmentsChange, s
               alignItems: 'flex-start',
               display: 'flex',
             }}
+            aria-required="true"
           >
             {departments.map((dept) => (
               <label key={dept} className="checkbox-item">
@@ -72,16 +96,24 @@ const DepartmentDetails = ({ formData, handleInputChange, onDepartmentsChange, s
                   onChange={handleCheckboxChange}
                   required
                 />
-                <span style={{ marginRight: 8 }}>{departmentIcons[dept]}</span>
-                {dept}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexWrap: 'wrap'
+                }}>
+                  <span style={{
+                    marginRight: 8,
+                    fontSize: '1.2em',
+                    display: 'inline-block',
+                    width: '24px',
+                    textAlign: 'center'
+                  }}>{departmentIcons[dept]}</span>
+                  <span>{dept}</span>
+                </div>
               </label>
             ))}
           </div>
-          {showValidation && formData.interestedDepartments.length === 0 && (
-            <span style={{ color: '#e53935', fontSize: '0.97em', marginTop: 6, display: 'block' }}>
-              Please select at least one department.
-            </span>
-          )}
+          {showValidation && isDepartmentEmpty && <ValidationError />}
         </div>
       </div>
     </div>
