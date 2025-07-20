@@ -3,6 +3,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from bson import ObjectId
 from config import MONGO_URI
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -16,13 +17,19 @@ def serialize_doc(doc):
     doc["_id"] = str(doc["_id"])
     return doc
 
-# Create
+# Create (Frontend POSTs all form data here)
 @app.route('/api/submit', methods=['POST'])
 def submit_application():
     data = request.json
-    if not data.get("name") or not data.get("emailId"):
-        return jsonify({"error": "Missing required fields"}), 400
+    # Basic validation for required fields
+    required_fields = ["name", "emailId", "contactNumber", "universityCollege", "yearOfStudy", "stateCityUniversity", "resumeUrl", "instagramId", "linkedinId", "currentGpa", "specialization", "interestedDepartments"]
+    missing = [f for f in required_fields if not data.get(f)]
+    if missing:
+        return jsonify({"error": f"Missing required fields: {', '.join(missing)}"}), 400
 
+    # Add timestamp
+    data["createdAt"] = datetime.utcnow()
+    # Insert into MongoDB
     result = applications_collection.insert_one(data)
     return jsonify({"success": True, "inserted_id": str(result.inserted_id)}), 201
 
@@ -63,13 +70,7 @@ def delete_application(id):
 
 @app.route('/')
 def home():
-    return "Flask CRUD API with MongoDB is running!"
+    return "SWET Recruitment Flask API with MongoDB is running!"
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-{
-  "success": true,
-  "inserted_id": "someObjectId"
-}
