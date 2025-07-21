@@ -4,6 +4,9 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from bson import ObjectId
 from datetime import datetime, timezone
+import threading
+import time
+import requests
 
 app = Flask(__name__)
 
@@ -147,6 +150,22 @@ def admin_get_applications():
 @app.route('/')
 def home():
     return "SWET Recruitment Flask API with MongoDB is running!"
+
+
+def keep_alive_ping():
+    """
+    Periodically ping the backend itself to prevent Render free service from sleeping.
+    """
+    url = os.environ.get("KEEP_ALIVE_URL") or "https://swet-recruitment-form.onrender.com"
+    while True:
+        try:
+            requests.get(url, timeout=10)
+        except Exception:
+            pass
+        time.sleep(600)  # Ping every 10 minutes
+
+if os.environ.get("RENDER", "false").lower() == "true":
+    threading.Thread(target=keep_alive_ping, daemon=True).start()
 
 if __name__ == "__main__":
     app.run(debug=True)
