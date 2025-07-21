@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: swet-recruitment-form
+    env: python
+    buildCommand: pip install -r requirement.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: FLASK_SECRET_KEY
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
