@@ -28,6 +28,8 @@ CORS(
 )
 
 app.secret_key = os.environ.get("FLASK_SECRET_KEY")
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True
 
 MONGO_URI = os.environ.get("MONGO_URI")
 client = MongoClient(MONGO_URI)
