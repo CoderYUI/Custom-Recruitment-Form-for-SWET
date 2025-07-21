@@ -1,5 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Core layout and global styles
 import './index.css';
@@ -13,6 +14,9 @@ import StudyDetails from './components/StudyDetails';
 import DepartmentDetails from './components/DepartmentDetails';
 import DynamicRoleRequirements from './components/DynamicRoleRequirements'; 
 import PaymentSection from './components/PaymentSection';
+import PaymentResult from './components/PaymentResult';
+import AlreadyFilledPayment from './components/AlreadyFilledPayment';
+import AdminPanel from './components/AdminPanel';
 
 // Data Import: This contains all the definitions for role-specific requirements
 import { roleRequirementsData } from './data/roleRequirenmentData';
@@ -71,6 +75,9 @@ function App() {
   const [showStudyValidation, setShowStudyValidation] = useState(false);
   const [showDepartmentValidation, setShowDepartmentValidation] = useState(false);
   const [roleValidation, setRoleValidation] = useState({}); // { roleName: boolean }
+  const [paymentStatus, setPaymentStatus] = useState(null); // "success" | "failed" | null
+  const [showAlreadyFilled, setShowAlreadyFilled] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
 
   // Validation for Basic Details section
   const isBasicDetailsValid =
@@ -265,7 +272,15 @@ function App() {
       case 'payment':
         return (
           <FormSectionWrapper sectionTitle="Payment Section" sectionNumber={sections.length}>
-            <PaymentSection formData={formData} handleFileChange={handleFileChange} />
+            {paymentStatus ? (
+              <PaymentResult status={paymentStatus} />
+            ) : (
+              <PaymentSection
+                formData={formData}
+                handleFileChange={handleFileChange}
+                setPaymentStatus={setPaymentStatus}
+              />
+            )}
           </FormSectionWrapper>
         );
       default:
@@ -302,64 +317,87 @@ function App() {
   };
 
   return (
-    <div className="app-main-wrapper">
-      <form className="application-form" onSubmit={handleSubmit} noValidate>
-        <Header />
-        {renderSection()}
-        <div
-          className="submit-button-container"
-          style={{
-            display: 'flex',
-            flexDirection: currentSection === 0 ? 'column' : 'row',
-            alignItems: 'center',
-            justifyContent: currentSection === 0 ? 'center' : 'space-between',
-            gap: currentSection === 0 ? 16 : 32,
-            marginTop: 24,
-          }}
-        >
-          {currentSection > 0 && (
-            <button type="button" className="submit-button" onClick={goBack} style={{ minWidth: 120 }}>
-              Back
-            </button>
-          )}
-          {currentSection < sections.length - 1 ? (
-            <>
-              <button
-                type="button"
-                className="submit-button"
-                onClick={goNext}
-                style={{
-                  minWidth: 120,
-                  marginLeft: currentSection > 0 ? 'auto' : undefined,
-                  alignSelf: currentSection === 0 ? 'center' : undefined,
-                }}
-              >
-                Next
-              </button>
-              {currentSection === 0 && (
-                <button
-                  type="button"
-                  className="submit-button"
-                  style={{
-                    background: '#fff',
-                    color: '#2563eb',
-                    border: '2px solid #2563eb',
-                    marginTop: 16,
-                    fontWeight: 700,
-                    minWidth: 220,
-                    alignSelf: 'center',
-                  }}
-                  tabIndex={-1}
-                  disabled
-                >
-                  Already Filled But Payment Failed?
-                </button>
-              )}
-            </>
-          ) : null}
-        </div>
-      </form>
-    </div>
+    <Router>
+      <div className="app-main-wrapper">
+        <Routes>
+          <Route
+            path="/admin"
+            element={<AdminPanel />}
+          />
+          <Route
+            path="/already-filled-payment"
+            element={<AlreadyFilledPayment />}
+          />
+          <Route
+            path="/"
+            element={
+              showAlreadyFilled ? (
+                <AlreadyFilledPayment />
+              ) : (
+                <form className="application-form" onSubmit={handleSubmit} noValidate>
+                  <Header />
+                  {renderSection()}
+                  {/* Hide navigation buttons if payment result is shown */}
+                  {!(sections[currentSection]?.type === 'payment' && paymentStatus) && (
+                    <div
+                      className="submit-button-container"
+                      style={{
+                        display: 'flex',
+                        flexDirection: currentSection === 0 ? 'column' : 'row',
+                        alignItems: 'center',
+                        justifyContent: currentSection === 0 ? 'center' : 'space-between',
+                        gap: currentSection === 0 ? 16 : 32,
+                        marginTop: 24,
+                      }}
+                    >
+                      {currentSection > 0 && (
+                        <button type="button" className="submit-button" onClick={goBack} style={{ minWidth: 120 }}>
+                          Back
+                        </button>
+                      )}
+                      {currentSection < sections.length - 1 ? (
+                        <>
+                          <button
+                            type="button"
+                            className="submit-button"
+                            onClick={goNext}
+                            style={{
+                              minWidth: 120,
+                              marginLeft: currentSection > 0 ? 'auto' : undefined,
+                              alignSelf: currentSection === 0 ? 'center' : undefined,
+                            }}
+                          >
+                            Next
+                          </button>
+                          {currentSection === 0 && (
+                            <button
+                              type="button"
+                              className="submit-button"
+                              style={{
+                                background: '#fff',
+                                color: '#2563eb',
+                                border: '2px solid #2563eb',
+                                marginTop: 16,
+                                fontWeight: 700,
+                                minWidth: 220,
+                                alignSelf: 'center',
+                              }}
+                              onClick={() => setShowAlreadyFilled(true)}
+                            >
+                              Already Filled But Payment Failed?
+                            </button>
+                          )}
+                        </>
+                      ) : null}
+                    </div>
+                  )}
+                </form>
+              )
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

@@ -1,16 +1,33 @@
-from flask import Flask, request, jsonify
+import os
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson import ObjectId
-from config import MONGO_URI
-from datetime import datetime
+from datetime import datetime, timezone
 
 app = Flask(__name__)
-CORS(app)
 
+# Allow CORS only for allowed origins
+default_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://swet-form.vercel.app"  # Replace with your deployed frontend URL
+]
+allowed_origins = os.environ.get("ALLOWED_ORIGINS")
+if allowed_origins:
+    origins = [o.strip() for o in allowed_origins.split(",")]
+else:
+    origins = default_origins
+
+CORS(app, origins=origins, supports_credentials=True)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY")
+
+MONGO_URI = os.environ.get("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client["CUSTOM_RECRUITMENT_FORM"]
 applications_collection = db["applications"]
+
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 
 # Helper to convert ObjectId to string
 def serialize_doc(doc):
@@ -27,8 +44,8 @@ def submit_application():
     if missing:
         return jsonify({"error": f"Missing required fields: {', '.join(missing)}"}), 400
 
-    # Add timestamp
-    data["createdAt"] = datetime.utcnow()
+    # Add timezone-aware UTC timestamp
+    data["createdAt"] = datetime.now(timezone.utc)
     # Insert into MongoDB
     result = applications_collection.insert_one(data)
     return jsonify({"success": True, "inserted_id": str(result.inserted_id)}), 201
@@ -67,6 +84,56 @@ def delete_application(id):
         return jsonify({"success": True, "deleted_id": id})
     else:
         return jsonify({"error": "Delete failed"}), 400
+
+@app.route('/api/applications/by-email-contact', methods=['POST'])
+def get_application_by_email_contact():
+    data = request.json
+    email = data.get('emailId')
+    contact = data.get('contactNumber')
+    if not email or not contact:
+        return jsonify({"error": "Email and contact number required"}), 400
+    app_doc = applications_collection.find_one({
+        "emailId": email,
+        "contactNumber": contact
+    })
+    if not app_doc:
+        return jsonify({"error": "Not found"}), 404
+    return jsonify(serialize_doc(app_doc)), 200
+
+@app.route('/api/applications/<id>/payment-success', methods=['POST'])
+def update_payment_success(id):
+    data = request.json
+    payment_id = data.get('razorpayPaymentId', '')
+    result = applications_collection.update_one(
+        {"_id": ObjectId(id)},
+        {"$set": {"paymentStatus": "success", "razorpayPaymentId": payment_id}}
+    )
+    if result.modified_count:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"error": "Update failed"}), 400
+
+@app.route('/api/admin/login', methods=['POST'])
+def admin_login():
+    data = request.json
+    password = data.get('password')
+    if password == ADMIN_PASSWORD:
+        session['admin_logged_in'] = True
+        return jsonify({"success": True})
+    return jsonify({"success": False, "error": "Invalid password"}), 401
+
+@app.route('/api/admin/logout', methods=['POST'])
+def admin_logout():
+    session.pop('admin_logged_in', None)
+    return jsonify({"success": True})
+
+@app.route('/api/admin/applications', methods=['GET'])
+def admin_get_applications():
+    if not session.get('admin_logged_in'):
+        return jsonify({"error": "Unauthorized"}), 401
+    applications = list(applications_collection.find())
+    applications = [serialize_doc(app) for app in applications]
+    return jsonify(applications)
 
 @app.route('/')
 def home():

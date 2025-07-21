@@ -8,7 +8,15 @@ export default defineConfig({
   server: {
     allowedHosts: [
       'localhost',
-      // Add other allowed hosts (for testing purposes)
-    ]
+      '127.0.0.1',
+      'swet-form.vercel.app' // Add your deployed frontend domain here
+    ],
+    proxy: {
+      '/api': {
+        target: process.env.VITE_BACKEND_URL || 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   }
 })
