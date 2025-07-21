@@ -9,7 +9,7 @@ export default defineConfig({
     allowedHosts: [
       'localhost',
       '127.0.0.1',
-      'swet-form.vercel.app' // Add your deployed frontend domain here
+      'swet-recruitment-form.vercel.app' // Add your deployed frontend domain here
     ],
     proxy: {
       '/api': {

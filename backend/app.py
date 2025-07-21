@@ -11,7 +11,7 @@ app = Flask(__name__)
 default_origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://swet-form.vercel.app"  # Replace with your deployed frontend URL
+    "https://swet-recruitment-form.vercel.app"  # Replace with your deployed frontend URL
 ]
 allowed_origins = os.environ.get("ALLOWED_ORIGINS")
 if allowed_origins:
