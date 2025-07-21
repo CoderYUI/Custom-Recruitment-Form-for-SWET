@@ -7,11 +7,11 @@ from datetime import datetime, timezone
 
 app = Flask(__name__)
 
-# Allow CORS only for allowed origins
+# --- CORS CONFIGURATION ---
 default_origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://swet-recruitment-form.vercel.app"  # Replace with your deployed frontend URL
+    "https://swet-recruitment-form.vercel.app"
 ]
 allowed_origins = os.environ.get("ALLOWED_ORIGINS")
 if allowed_origins:
@@ -19,7 +19,14 @@ if allowed_origins:
 else:
     origins = default_origins
 
-CORS(app, origins=origins, supports_credentials=True)
+CORS(
+    app,
+    origins=origins,
+    supports_credentials=True,
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
+
 app.secret_key = os.environ.get("FLASK_SECRET_KEY")
 
 MONGO_URI = os.environ.get("MONGO_URI")
